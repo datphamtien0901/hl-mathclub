@@ -6,7 +6,7 @@
   <title>Chinh Phục Đích N — HoaLu Math Club</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p6OZb6m6kq6+Qm5Y1s6f0g1JY7T1P0Y5w0g6vD05u5r0f2xgq7z0q7z0q7z0q7z0q7z0q7z0q7z0q7z0q7z0q7z==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script>
     window.tailwind = {
       config: {
@@ -21,28 +21,47 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    body { font-family: 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto; background: #f8fafc; }
+    body { font-family: 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto; background: linear-gradient(180deg,#f0f9ff, #f9fafb); }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
-  <div class="w-full max-w-2xl bg-white rounded-3xl p-6 shadow-lg">
+  <div class="w-full max-w-3xl bg-white rounded-3xl p-6 shadow-lg">
     <header class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-4">
         <img src="../../logo.png" alt="Logo" class="h-10 w-auto object-contain">
         <div>
           <h1 class="text-xl font-bold text-indigo-600">Chinh Phục Đích N</h1>
-          <p class="text-sm text-slate-500">Số học &amp; Chiến thuật • Bản demo</p>
+          <p class="text-sm text-slate-500">Trò đếm số: ai chạm đúng N sẽ thắng • Có chế độ 1v1 hoặc chơi với máy</p>
         </div>
       </div>
-      <a href="../../index.html" class="px-3 py-2 rounded-lg bg-amber-400 text-white font-semibold border-b-4 border-amber-600 shadow-md">
-        <i class="fa-solid fa-arrow-left mr-2"></i>Trở về
-      </a>
+      <div class="flex items-center gap-3">
+        <a href="../../index.html" class="px-3 py-2 rounded-lg bg-amber-400 text-white font-semibold border-b-4 border-amber-600 shadow-md">
+          <i class="fa-solid fa-arrow-left mr-2"></i>Trở về
+        </a>
+      </div>
     </header>
 
     <main>
-      <p class="text-slate-600 mb-4">Mục tiêu: Đạt chính xác một số N bằng cách nhấn các nút +1 hoặc +5. Cố gắng ít lượt nhất có thể!</p>
+      <!-- Controls -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="col-span-1 md:col-span-1">
+          <label class="block text-sm font-medium text-slate-600">Mục tiêu N</label>
+          <input id="inputN" type="number" min="5" value="21" class="mt-1 block w-full rounded-xl border-slate-200 shadow-sm p-2" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600">Bước tối đa k</label>
+          <input id="inputK" type="number" min="1" value="3" class="mt-1 block w-full rounded-xl border-slate-200 shadow-sm p-2" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600">Chế độ chơi</label>
+          <div class="mt-1 flex gap-2">
+            <button id="modePvp" class="mode-btn flex-1 px-3 py-2 rounded-2xl bg-indigo-600 text-white font-semibold">1v1</button>
+            <button id="modeCpu" class="mode-btn flex-1 px-3 py-2 rounded-2xl bg-slate-100 text-slate-700 font-semibold">Vs Máy</button>
+          </div>
+        </div>
+      </div>
 
-      <div class="bg-sky-50 p-4 rounded-xl mb-4">
+      <div class="rounded-xl p-4 bg-sky-50 mb-4">
         <div class="flex items-center justify-between">
           <div>
             <div class="text-sm text-slate-500">Mục tiêu</div>
@@ -57,101 +76,224 @@
             <div id="moves" class="text-3xl font-extrabold text-amber-500">0</div>
           </div>
         </div>
+
+        <!-- Progress bar representing current relative to N -->
+        <div class="mt-4">
+          <div class="w-full h-6 bg-white rounded-full shadow-inner border border-slate-100 overflow-hidden">
+            <div id="progress" class="h-6 bg-gradient-to-r from-indigo-500 via-amber-400 to-emerald-400 text-xs text-white flex items-center justify-center" style="width:0%">0%</div>
+          </div>
+        </div>
       </div>
 
-      <div class="flex gap-3 mb-4">
-        <button id="btnPlus1" class="flex-1 px-4 py-3 rounded-2xl bg-indigo-600 text-white font-semibold shadow-indigo-100 border-b-4 border-indigo-800 hover:bg-indigo-700">
-          +1
-        </button>
-        <button id="btnPlus5" class="flex-1 px-4 py-3 rounded-2xl bg-emerald-500 text-white font-semibold shadow-md border-b-4 border-emerald-700 hover:bg-emerald-600">
-          +5
-        </button>
-        <button id="btnReset" class="px-4 py-3 rounded-2xl bg-slate-200 text-slate-700 font-semibold border-b-4 border-slate-400 hover:bg-slate-300">
-          Khởi tạo lại
-        </button>
+      <!-- Game board: buttons for steps -->
+      <div class="mb-4">
+        <div id="turnIndicator" class="text-sm mb-2 font-semibold text-indigo-700">Chuẩn bị...</div>
+        <div id="buttons" class="flex flex-wrap gap-3">
+          <!-- Buttons generated dynamically based on k -->
+        </div>
       </div>
 
-      <div id="message" class="text-center text-slate-600"></div>
+      <div class="flex items-center gap-3">
+        <button id="btnStart" class="px-4 py-2 rounded-2xl bg-emerald-500 text-white font-semibold border-b-4 border-emerald-700 shadow-md">Bắt đầu</button>
+        <button id="btnReset" class="px-4 py-2 rounded-2xl bg-slate-200 text-slate-700 font-semibold border-b-4 border-slate-400">Khởi tạo lại</button>
+        <div id="message" class="ml-auto text-slate-600 font-medium"></div>
+      </div>
 
-      <div class="mt-6 text-sm text-slate-500">
-        <p><strong>Gợi ý:</strong> Suy nghĩ chiến lược: dùng nhiều +5 khi gần mục tiêu, tinh chỉnh bằng +1.</p>
+      <div class="mt-4 text-sm text-slate-500">
+        <p><strong>Luật chơi:</strong> Bắt đầu từ 0, mỗi lượt người chơi được thêm 1 tới k. Ai chọn đúng số N sẽ thắng.</p>
       </div>
     </main>
   </div>
 
   <script>
-    // Simple demo logic
+    // Elements
+    const inputN = document.getElementById('inputN');
+    const inputK = document.getElementById('inputK');
+    const modePvp = document.getElementById('modePvp');
+    const modeCpu = document.getElementById('modeCpu');
     const targetEl = document.getElementById('target');
     const currentEl = document.getElementById('current');
     const movesEl = document.getElementById('moves');
-    const messageEl = document.getElementById('message');
-    const btnPlus1 = document.getElementById('btnPlus1');
-    const btnPlus5 = document.getElementById('btnPlus5');
+    const progressEl = document.getElementById('progress');
+    const buttonsEl = document.getElementById('buttons');
+    const turnIndicator = document.getElementById('turnIndicator');
+    const btnStart = document.getElementById('btnStart');
     const btnReset = document.getElementById('btnReset');
+    const messageEl = document.getElementById('message');
 
-    let target = 0;
+    // State
+    let N = 21;
+    let k = 3;
     let current = 0;
     let moves = 0;
+    let mode = 'pvp'; // 'pvp' or 'cpu'
+    let playerTurn = 1; // 1 or 2 (2 = CPU when mode='cpu')
+    let running = false;
 
-    function newGame() {
-      // random target between 10 and 50 for demo
-      target = Math.floor(Math.random() * 41) + 10;
-      current = 0;
-      moves = 0;
-      updateUI();
-      messageEl.textContent = 'Bắt đầu nào! 🎯';
-    }
-
-    function updateUI() {
-      targetEl.textContent = target;
-      currentEl.textContent = current;
-      movesEl.textContent = moves;
-    }
-
-    function checkWin() {
-      if (current === target) {
-        messageEl.innerHTML = 'Chúc mừng! Bạn đã chinh phục mục tiêu trong ' + moves + ' lượt 🎉';
-        // Disable buttons
-        btnPlus1.disabled = true;
-        btnPlus5.disabled = true;
-        btnPlus1.classList.add('opacity-50', 'cursor-not-allowed');
-        btnPlus5.classList.add('opacity-50', 'cursor-not-allowed');
-      } else if (current > target) {
-        messageEl.innerHTML = 'Bạn đã vượt quá mục tiêu. Nhấn "Khởi tạo lại" để chơi lại 😅';
-        btnPlus1.disabled = true;
-        btnPlus5.disabled = true;
-        btnPlus1.classList.add('opacity-50', 'cursor-not-allowed');
-        btnPlus5.classList.add('opacity-50', 'cursor-not-allowed');
+    function setMode(newMode) {
+      mode = newMode;
+      if (mode === 'pvp') {
+        modePvp.classList.add('bg-indigo-600', 'text-white');
+        modePvp.classList.remove('bg-slate-100', 'text-slate-700');
+        modeCpu.classList.remove('bg-indigo-600','text-white');
+        modeCpu.classList.add('bg-slate-100','text-slate-700');
       } else {
-        messageEl.textContent = 'Tiếp tục nào — suy nghĩ chiến lược! 🤓';
+        modeCpu.classList.add('bg-indigo-600','text-white');
+        modeCpu.classList.remove('bg-slate-100','text-slate-700');
+        modePvp.classList.remove('bg-indigo-600','text-white');
+        modePvp.classList.add('bg-slate-100','text-slate-700');
       }
     }
 
-    btnPlus1.addEventListener('click', () => {
-      current += 1;
-      moves += 1;
-      updateUI();
-      checkWin();
-    });
+    function renderButtons() {
+      buttonsEl.innerHTML = '';
+      for (let i = 1; i <= k; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold border-b-4 border-indigo-800 shadow-md hover:bg-indigo-700';
+        btn.textContent = '+' + i;
+        btn.dataset.step = i;
+        btn.addEventListener('click', () => playerMove(Number(btn.dataset.step)));
+        buttonsEl.appendChild(btn);
+      }
+    }
 
-    btnPlus5.addEventListener('click', () => {
-      current += 5;
+    function updateUI() {
+      targetEl.textContent = N;
+      currentEl.textContent = current;
+      movesEl.textContent = moves;
+      const percent = Math.min(100, Math.round((current / N) * 100));
+      progressEl.style.width = percent + '%';
+      progressEl.textContent = percent + '%';
+
+      if (!running) {
+        turnIndicator.textContent = 'Nhấn Bắt đầu để chơi';
+      } else {
+        if (mode === 'pvp') {
+          turnIndicator.textContent = `Lượt: Người chơi ${playerTurn} ${playerTurn === 1 ? '🟦' : '🟧'}`;
+        } else {
+          turnIndicator.textContent = `Lượt: ${playerTurn === 1 ? 'Bạn 🧑' : 'Máy 🤖'}`;
+        }
+      }
+    }
+
+    function setControlsEnabled(enabled) {
+      const btns = buttonsEl.querySelectorAll('button');
+      btns.forEach(b => {
+        b.disabled = !enabled;
+        if (!enabled) {
+          b.classList.add('opacity-50','cursor-not-allowed');
+        } else {
+          b.classList.remove('opacity-50','cursor-not-allowed');
+        }
+      });
+    }
+
+    function playerMove(step) {
+      if (!running) return;
+      if (current + step > N) {
+        messageEl.textContent = 'Bước quá lớn — không được vượt quá N';
+        return;
+      }
+      current += step;
       moves += 1;
+      messageEl.textContent = '';
       updateUI();
-      checkWin();
+      checkEndOrContinue();
+    }
+
+    function checkEndOrContinue() {
+      if (current === N) {
+        running = false;
+        const winner = (mode === 'pvp') ? `Người chơi ${playerTurn}` : (playerTurn === 1 ? 'Bạn' : 'Máy');
+        messageEl.innerHTML = `<span class="text-green-600 font-bold">${winner} thắng! 🎉</span>`;
+        setControlsEnabled(false);
+        turnIndicator.textContent = 'Trò chơi kết thúc';
+        return;
+      }
+      // switch turn
+      playerTurn = (playerTurn === 1) ? 2 : 1;
+      updateUI();
+
+      if (mode === 'cpu' && playerTurn === 2 && running) {
+        // CPU turn
+        setControlsEnabled(false);
+        turnIndicator.textContent = 'Máy đang suy nghĩ... 🤖';
+        setTimeout(cpuMove, 800 + Math.random() * 700);
+      } else {
+        setControlsEnabled(true);
+      }
+    }
+
+    function cpuMove() {
+      // Optimal strategy for the subtraction game
+      // Want to pick r in [1..k] such that (N - (current + r)) % (k+1) === 0
+      let r = ((N - current) % (k + 1));
+      if (r === 0) {
+        // no winning move, pick random valid move that doesn't exceed N
+        const maxStep = Math.min(k, N - current);
+        r = Math.floor(Math.random() * maxStep) + 1;
+      } else if (r < 0) {
+        // safety
+        const maxStep = Math.min(k, N - current);
+        r = Math.floor(Math.random() * maxStep) + 1;
+      } else if (r > k || r > (N - current)) {
+        // can't play r because it's too large, choose nearest valid
+        r = Math.min(k, N - current);
+      }
+
+      // perform move
+      current += r;
+      moves += 1;
+      messageEl.textContent = `Máy chọn +${r}`;
+      updateUI();
+      checkEndOrContinue();
+    }
+
+    // Start/reset handlers
+    btnStart.addEventListener('click', () => {
+      // parse inputs
+      const nVal = Number(inputN.value) || 21;
+      const kVal = Number(inputK.value) || 3;
+      if (nVal <= 0 || kVal <= 0) {
+        alert('Vui lòng đặt N > 0 và k > 0');
+        return;
+      }
+      N = Math.max(5, Math.floor(nVal));
+      k = Math.max(1, Math.floor(kVal));
+      current = 0;
+      moves = 0;
+      running = true;
+      playerTurn = 1; // player 1 starts
+      renderButtons();
+      updateUI();
+      setControlsEnabled(true);
+      messageEl.textContent = 'Trò chơi bắt đầu!';
+      // If mode cpu and CPU starts? always player starts for simplicity
+      // if you want CPU first, flip playerTurn
     });
 
     btnReset.addEventListener('click', () => {
-      // re-enable buttons
-      btnPlus1.disabled = false;
-      btnPlus5.disabled = false;
-      btnPlus1.classList.remove('opacity-50','cursor-not-allowed');
-      btnPlus5.classList.remove('opacity-50','cursor-not-allowed');
-      newGame();
+      running = false;
+      current = 0;
+      moves = 0;
+      N = Number(inputN.value) || 21;
+      k = Number(inputK.value) || 3;
+      playerTurn = 1;
+      renderButtons();
+      updateUI();
+      setControlsEnabled(false);
+      messageEl.textContent = 'Đã khởi tạo lại';
     });
 
-    // start automatically
-    newGame();
+    // Mode buttons
+    modePvp.addEventListener('click', () => setMode('pvp'));
+    modeCpu.addEventListener('click', () => setMode('cpu'));
+
+    // Init
+    setMode('pvp');
+    renderButtons();
+    updateUI();
+    setControlsEnabled(false);
   </script>
 </body>
 </html>
