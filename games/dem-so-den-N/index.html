@@ -28,7 +28,10 @@
   <div class="w-full max-w-3xl bg-white rounded-3xl p-6 shadow-lg">
     <header class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-4">
-        <img src="../../logo.png" alt="Logo" class="h-10 w-auto object-contain">
+        <!-- Replaced logo image with game icon -->
+        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 via-amber-400 to-emerald-400 flex items-center justify-center shadow-md text-white text-2xl">
+          <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+        </div>
         <div>
           <h1 class="text-xl font-bold text-indigo-600">Chinh Phục Đích N</h1>
           <p class="text-sm text-slate-500">Trò đếm số: ai chạm đúng N sẽ thắng • Có chế độ 1v1 hoặc chơi với máy</p>
@@ -43,8 +46,8 @@
 
     <main>
       <!-- Controls -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div class="col-span-1 md:col-span-1">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <div>
           <label class="block text-sm font-medium text-slate-600">Mục tiêu N</label>
           <input id="inputN" type="number" min="5" value="21" class="mt-1 block w-full rounded-xl border-slate-200 shadow-sm p-2" />
         </div>
@@ -59,38 +62,62 @@
             <button id="modeCpu" class="mode-btn flex-1 px-3 py-2 rounded-2xl bg-slate-100 text-slate-700 font-semibold">Vs Máy</button>
           </div>
         </div>
+        <div>
+          <label class="block text-sm font-medium text-slate-600">Máy đi trước</label>
+          <div class="mt-1">
+            <label class="inline-flex items-center gap-2 bg-slate-100 p-2 rounded-xl">
+              <input id="cpuFirst" type="checkbox" />
+              <span class="text-sm text-slate-700">Bật nếu muốn Máy đi trước</span>
+            </label>
+          </div>
+        </div>
       </div>
 
-      <div class="rounded-xl p-4 bg-sky-50 mb-4">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-sm text-slate-500">Mục tiêu</div>
-            <div id="target" class="text-3xl font-extrabold text-indigo-700">—</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 items-center">
+        <div class="rounded-xl p-4 bg-sky-50">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-slate-500">Mục tiêu</div>
+              <div id="target" class="text-3xl font-extrabold text-indigo-700">—</div>
+            </div>
+            <div>
+              <div class="text-sm text-slate-500">Giá trị hiện tại</div>
+              <div id="current" class="text-3xl font-extrabold text-emerald-600">0</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm text-slate-500">Lượt</div>
+              <div id="moves" class="text-3xl font-extrabold text-amber-500">0</div>
+            </div>
           </div>
-          <div>
-            <div class="text-sm text-slate-500">Giá trị hiện tại</div>
-            <div id="current" class="text-3xl font-extrabold text-emerald-600">0</div>
-          </div>
-          <div class="text-right">
-            <div class="text-sm text-slate-500">Lượt</div>
-            <div id="moves" class="text-3xl font-extrabold text-amber-500">0</div>
+
+          <!-- Progress bar -->
+          <div class="mt-4">
+            <div class="w-full h-6 bg-white rounded-full shadow-inner border border-slate-100 overflow-hidden">
+              <div id="progress" class="h-6 bg-gradient-to-r from-indigo-500 via-amber-400 to-emerald-400 text-xs text-white flex items-center justify-center" style="width:0%">0%</div>
+            </div>
           </div>
         </div>
 
-        <!-- Progress bar representing current relative to N -->
-        <div class="mt-4">
-          <div class="w-full h-6 bg-white rounded-full shadow-inner border border-slate-100 overflow-hidden">
-            <div id="progress" class="h-6 bg-gradient-to-r from-indigo-500 via-amber-400 to-emerald-400 text-xs text-white flex items-center justify-center" style="width:0%">0%</div>
+        <div class="rounded-xl p-4 bg-white border border-slate-100">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <div class="text-sm text-slate-500">Độ khó Máy</div>
+              <div class="text-xs text-slate-400">Chọn cách Máy đưa ra quyết định</div>
+            </div>
+            <div class="flex gap-2">
+              <button id="diffEasy" class="px-3 py-2 rounded-2xl bg-slate-100">Dễ</button>
+              <button id="diffMed" class="px-3 py-2 rounded-2xl bg-indigo-600 text-white">Trung bình</button>
+              <button id="diffHard" class="px-3 py-2 rounded-2xl bg-slate-100">Khó</button>
+            </div>
           </div>
+          <p class="text-sm text-slate-500">Dễ: chọn ngẫu nhiên hợp lệ. Trung bình: đôi khi chơi tối ưu. Khó: chơi tối ưu luôn.</p>
         </div>
       </div>
 
       <!-- Game board: buttons for steps -->
       <div class="mb-4">
         <div id="turnIndicator" class="text-sm mb-2 font-semibold text-indigo-700">Chuẩn bị...</div>
-        <div id="buttons" class="flex flex-wrap gap-3">
-          <!-- Buttons generated dynamically based on k -->
-        </div>
+        <div id="buttons" class="flex flex-wrap gap-3"></div>
       </div>
 
       <div class="flex items-center gap-3">
@@ -111,6 +138,7 @@
     const inputK = document.getElementById('inputK');
     const modePvp = document.getElementById('modePvp');
     const modeCpu = document.getElementById('modeCpu');
+    const cpuFirstCheckbox = document.getElementById('cpuFirst');
     const targetEl = document.getElementById('target');
     const currentEl = document.getElementById('current');
     const movesEl = document.getElementById('moves');
@@ -120,6 +148,9 @@
     const btnStart = document.getElementById('btnStart');
     const btnReset = document.getElementById('btnReset');
     const messageEl = document.getElementById('message');
+    const diffEasy = document.getElementById('diffEasy');
+    const diffMed = document.getElementById('diffMed');
+    const diffHard = document.getElementById('diffHard');
 
     // State
     let N = 21;
@@ -129,6 +160,7 @@
     let mode = 'pvp'; // 'pvp' or 'cpu'
     let playerTurn = 1; // 1 or 2 (2 = CPU when mode='cpu')
     let running = false;
+    let cpuDifficulty = 'medium'; // easy, medium, hard
 
     function setMode(newMode) {
       mode = newMode;
@@ -143,6 +175,20 @@
         modePvp.classList.remove('bg-indigo-600','text-white');
         modePvp.classList.add('bg-slate-100','text-slate-700');
       }
+      updateUI();
+    }
+
+    function setDifficulty(d) {
+      cpuDifficulty = d;
+      diffEasy.classList.remove('bg-indigo-600','text-white');
+      diffMed.classList.remove('bg-indigo-600','text-white');
+      diffHard.classList.remove('bg-indigo-600','text-white');
+      diffEasy.classList.add('bg-slate-100');
+      diffMed.classList.add('bg-slate-100');
+      diffHard.classList.add('bg-slate-100');
+      if (d === 'easy') { diffEasy.classList.add('bg-indigo-600','text-white'); }
+      if (d === 'medium') { diffMed.classList.add('bg-indigo-600','text-white'); }
+      if (d === 'hard') { diffHard.classList.add('bg-indigo-600','text-white'); }
     }
 
     function renderButtons() {
@@ -218,30 +264,46 @@
         // CPU turn
         setControlsEnabled(false);
         turnIndicator.textContent = 'Máy đang suy nghĩ... 🤖';
-        setTimeout(cpuMove, 800 + Math.random() * 700);
+        setTimeout(cpuMove, 600 + Math.random() * 800);
       } else {
         setControlsEnabled(true);
       }
     }
 
-    function cpuMove() {
-      // Optimal strategy for the subtraction game
-      // Want to pick r in [1..k] such that (N - (current + r)) % (k+1) === 0
-      let r = ((N - current) % (k + 1));
-      if (r === 0) {
-        // no winning move, pick random valid move that doesn't exceed N
-        const maxStep = Math.min(k, N - current);
-        r = Math.floor(Math.random() * maxStep) + 1;
-      } else if (r < 0) {
-        // safety
-        const maxStep = Math.min(k, N - current);
-        r = Math.floor(Math.random() * maxStep) + 1;
-      } else if (r > k || r > (N - current)) {
-        // can't play r because it's too large, choose nearest valid
-        r = Math.min(k, N - current);
+    function cpuChooseMove() {
+      // Determine optimal move r in [1..k] that makes (N - (current + r)) % (k+1) === 0
+      const maxStep = Math.min(k, N - current);
+      if (maxStep <= 0) return 0;
+      const optimalR = ((N - current) % (k + 1));
+      let rOpt = optimalR;
+      if (rOpt <= 0 || rOpt > maxStep) {
+        rOpt = 0; // no optimal within bounds
       }
 
-      // perform move
+      if (cpuDifficulty === 'easy') {
+        // random valid
+        return Math.floor(Math.random() * maxStep) + 1;
+      }
+
+      if (cpuDifficulty === 'medium') {
+        // 60% chance to play optimal (if exists), else random
+        if (rOpt > 0 && Math.random() < 0.6) return rOpt;
+        return Math.floor(Math.random() * maxStep) + 1;
+      }
+
+      // hard: always optimal when possible, else random
+      if (rOpt > 0) return rOpt;
+      return Math.floor(Math.random() * maxStep) + 1;
+    }
+
+    function cpuMove() {
+      const r = cpuChooseMove();
+      // safety
+      if (r <= 0) {
+        messageEl.textContent = 'Máy không thể đi';
+        setControlsEnabled(true);
+        return;
+      }
       current += r;
       moves += 1;
       messageEl.textContent = `Máy chọn +${r}`;
@@ -263,13 +325,20 @@
       current = 0;
       moves = 0;
       running = true;
-      playerTurn = 1; // player 1 starts
+      playerTurn = 1; // player 1 starts by default
       renderButtons();
       updateUI();
       setControlsEnabled(true);
       messageEl.textContent = 'Trò chơi bắt đầu!';
-      // If mode cpu and CPU starts? always player starts for simplicity
-      // if you want CPU first, flip playerTurn
+
+      // If mode cpu and cpuFirst checked, let CPU play first
+      if (mode === 'cpu' && cpuFirstCheckbox.checked) {
+        playerTurn = 2; // CPU is player 2
+        updateUI();
+        setControlsEnabled(false);
+        turnIndicator.textContent = 'Máy đang suy nghĩ... 🤖';
+        setTimeout(cpuMove, 700 + Math.random() * 800);
+      }
     });
 
     btnReset.addEventListener('click', () => {
@@ -289,8 +358,14 @@
     modePvp.addEventListener('click', () => setMode('pvp'));
     modeCpu.addEventListener('click', () => setMode('cpu'));
 
+    // Difficulty buttons
+    diffEasy.addEventListener('click', () => setDifficulty('easy'));
+    diffMed.addEventListener('click', () => setDifficulty('medium'));
+    diffHard.addEventListener('click', () => setDifficulty('hard'));
+
     // Init
     setMode('pvp');
+    setDifficulty('medium');
     renderButtons();
     updateUI();
     setControlsEnabled(false);
