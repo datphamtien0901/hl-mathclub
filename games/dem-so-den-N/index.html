@@ -1,207 +1,157 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chinh Phục Đích N - Cổng Game Toán Học</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chinh Phục Đích N — HoaLu Math Club</title>
 
-    <!-- Header -->
-    <header class="bg-slate-800 border-b border-slate-700 py-4 px-6 sticky top-0 z-10 shadow-lg">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 p-2 rounded-lg text-white">
-                    <i class="fa-solid fa-flag-checkered text-xl"></i>
-                </div>
-                <h1 class="text-xl font-bold text-white">Chinh Phục Đích N</h1>
-            </div>
-            <!-- Nút quay về trang chủ -->
-            <a href="../../index.html" class="bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center space-x-2">
-                <i class="fa-solid fa-house"></i>
-                <span>Trang chủ</span>
-            </a>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p6OZb6m6kq6+Qm5Y1s6f0g1JY7T1P0Y5w0g6vD05u5r0f2xgq7z0q7z0q7z0q7z0q7z0q7z0q7z0q7z0q7z0q7z==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script>
+    window.tailwind = {
+      config: {
+        theme: {
+          extend: {
+            fontFamily: { sans: ['Nunito', 'ui-sans-serif', 'system-ui'] }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body { font-family: 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto; background: #f8fafc; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+  <div class="w-full max-w-2xl bg-white rounded-3xl p-6 shadow-lg">
+    <header class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-4">
+        <img src="../../logo.png" alt="Logo" class="h-10 w-auto object-contain">
+        <div>
+          <h1 class="text-xl font-bold text-indigo-600">Chinh Phục Đích N</h1>
+          <p class="text-sm text-slate-500">Số học &amp; Chiến thuật • Bản demo</p>
         </div>
+      </div>
+      <a href="../../index.html" class="px-3 py-2 rounded-lg bg-amber-400 text-white font-semibold border-b-4 border-amber-600 shadow-md">
+        <i class="fa-solid fa-arrow-left mr-2"></i>Trở về
+      </a>
     </header>
 
-    <!-- Game Board -->
-    <main class="flex-1 max-w-2xl w-full mx-auto p-4 md:p-6 space-y-6">
-        <!-- Cấu hình ban đầu -->
-        <div id="nim-setup" class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
-            <h3 class="text-2xl font-bold text-white mb-4 flex items-center">
-                <i class="fa-solid fa-sliders text-indigo-400 mr-3"></i>Cấu Hình Trò Chơi
-            </h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Chế độ chơi:</label>
-                    <select id="input-mode" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500">
-                        <option value="pve" selected>🎮 Đấu với Máy (AI)</option>
-                        <option value="pvp">👥 2 Người chơi (1v1)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Số đích cần đạt (N):</label>
-                    <input type="number" id="input-target" value="20" min="10" max="100" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Số bước tối đa mỗi lượt (K):</label>
-                    <select id="input-max-step" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-indigo-500">
-                        <option value="2">Được chọn cộng 1 hoặc 2</option>
-                        <option value="3" selected>Được chọn cộng 1, 2 hoặc 3</option>
-                        <option value="4">Được chọn cộng 1, 2, 3 hoặc 4</option>
-                    </select>
-                </div>
-                <button onclick="initGame()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-indigo-600/30">
-                    Bắt đầu cuộc đua
-                </button>
-            </div>
+    <main>
+      <p class="text-slate-600 mb-4">Mục tiêu: Đạt chính xác một số N bằng cách nhấn các nút +1 hoặc +5. Cố gắng ít lượt nhất có thể!</p>
+
+      <div class="bg-sky-50 p-4 rounded-xl mb-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="text-sm text-slate-500">Mục tiêu</div>
+            <div id="target" class="text-3xl font-extrabold text-indigo-700">—</div>
+          </div>
+          <div>
+            <div class="text-sm text-slate-500">Giá trị hiện tại</div>
+            <div id="current" class="text-3xl font-extrabold text-emerald-600">0</div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm text-slate-500">Lượt</div>
+            <div id="moves" class="text-3xl font-extrabold text-amber-500">0</div>
+          </div>
         </div>
+      </div>
 
-        <!-- Bàn chơi chính -->
-        <div id="nim-playboard" class="hidden space-y-6">
-            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 text-center space-y-4">
-                <div class="flex justify-between items-center text-sm text-slate-400">
-                    <span>Mốc đích: <strong id="disp-target" class="text-indigo-400 text-base">20</strong></span>
-                    <span>Chế độ: <strong id="disp-mode-name" class="text-emerald-400 text-base">Đấu với Máy</strong></span>
-                </div>
-                <div class="py-4">
-                    <span class="text-sm uppercase tracking-wider text-slate-400">Giá trị hiện tại</span>
-                    <div id="disp-current" class="text-6xl font-black text-white mt-1">0</div>
-                </div>
-                <div id="disp-status" class="py-2 px-4 rounded-xl bg-indigo-500/20 text-indigo-300 font-medium inline-block">
-                    Lượt của bạn! Hãy chọn số cộng thêm.
-                </div>
-            </div>
+      <div class="flex gap-3 mb-4">
+        <button id="btnPlus1" class="flex-1 px-4 py-3 rounded-2xl bg-indigo-600 text-white font-semibold shadow-indigo-100 border-b-4 border-indigo-800 hover:bg-indigo-700">
+          +1
+        </button>
+        <button id="btnPlus5" class="flex-1 px-4 py-3 rounded-2xl bg-emerald-500 text-white font-semibold shadow-md border-b-4 border-emerald-700 hover:bg-emerald-600">
+          +5
+        </button>
+        <button id="btnReset" class="px-4 py-3 rounded-2xl bg-slate-200 text-slate-700 font-semibold border-b-4 border-slate-400 hover:bg-slate-300">
+          Khởi tạo lại
+        </button>
+      </div>
 
-            <div id="nim-controls" class="bg-slate-800 border border-slate-700 rounded-2xl p-6">
-                <p class="text-sm font-medium text-slate-300 mb-3 text-center">Cộng thêm vào giá trị hiện tại:</p>
-                <div id="action-buttons" class="grid grid-cols-3 gap-3"></div>
-            </div>
+      <div id="message" class="text-center text-slate-600"></div>
 
-            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4">
-                <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Lịch sử nước đi</h4>
-                <div id="nim-history" class="text-sm text-slate-300 space-y-1 max-h-32 overflow-y-auto pr-2">
-                    <p class="text-slate-500 italic">Bắt đầu tính từ 0...</p>
-                </div>
-            </div>
-        </div>
+      <div class="mt-6 text-sm text-slate-500">
+        <p><strong>Gợi ý:</strong> Suy nghĩ chiến lược: dùng nhiều +5 khi gần mục tiêu, tinh chỉnh bằng +1.</p>
+      </div>
     </main>
+  </div>
 
-    <!-- Script logic -->
-    <script>
-        let targetN = 20, maxK = 3, currentNum = 0, isGameOver = false;
-        let gameMode = 'pve'; // 'pve' (Đấu Máy) hoặc 'pvp' (2 Người)
-        let currentPlayer = 1; // 1 hoặc 2
+  <script>
+    // Simple demo logic
+    const targetEl = document.getElementById('target');
+    const currentEl = document.getElementById('current');
+    const movesEl = document.getElementById('moves');
+    const messageEl = document.getElementById('message');
+    const btnPlus1 = document.getElementById('btnPlus1');
+    const btnPlus5 = document.getElementById('btnPlus5');
+    const btnReset = document.getElementById('btnReset');
 
-        function initGame() {
-            gameMode = document.getElementById('input-mode').value;
-            targetN = parseInt(document.getElementById('input-target').value) || 20;
-            maxK = parseInt(document.getElementById('input-max-step').value) || 3;
-            currentNum = 0; 
-            isGameOver = false; 
-            currentPlayer = 1;
+    let target = 0;
+    let current = 0;
+    let moves = 0;
 
-            document.getElementById('disp-target').innerText = targetN;
-            document.getElementById('disp-mode-name').innerText = (gameMode === 'pve') ? "Đấu với Máy" : "2 Người chơi";
-            document.getElementById('disp-current').innerText = currentNum;
-            document.getElementById('nim-history').innerHTML = '<p class="text-slate-500 italic">Bắt đầu tính từ 0...</p>';
+    function newGame() {
+      // random target between 10 and 50 for demo
+      target = Math.floor(Math.random() * 41) + 10;
+      current = 0;
+      moves = 0;
+      updateUI();
+      messageEl.textContent = 'Bắt đầu nào! 🎯';
+    }
 
-            document.getElementById('nim-setup').classList.add('hidden');
-            document.getElementById('nim-playboard').classList.remove('hidden');
+    function updateUI() {
+      targetEl.textContent = target;
+      currentEl.textContent = current;
+      movesEl.textContent = moves;
+    }
 
-            renderButtons();
-            
-            const startTurnText = (gameMode === 'pve') ? "Lượt của bạn! Hãy chọn số cộng thêm." : "Lượt của Người chơi 1!";
-            updateStatus(startTurnText, "indigo");
-        }
+    function checkWin() {
+      if (current === target) {
+        messageEl.innerHTML = 'Chúc mừng! Bạn đã chinh phục mục tiêu trong ' + moves + ' lượt 🎉';
+        // Disable buttons
+        btnPlus1.disabled = true;
+        btnPlus5.disabled = true;
+        btnPlus1.classList.add('opacity-50', 'cursor-not-allowed');
+        btnPlus5.classList.add('opacity-50', 'cursor-not-allowed');
+      } else if (current > target) {
+        messageEl.innerHTML = 'Bạn đã vượt quá mục tiêu. Nhấn "Khởi tạo lại" để chơi lại 😅';
+        btnPlus1.disabled = true;
+        btnPlus5.disabled = true;
+        btnPlus1.classList.add('opacity-50', 'cursor-not-allowed');
+        btnPlus5.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        messageEl.textContent = 'Tiếp tục nào — suy nghĩ chiến lược! 🤓';
+      }
+    }
 
-        function renderButtons() {
-            const container = document.getElementById('action-buttons');
-            container.innerHTML = '';
-            
-            // Khóa nút nếu game kết thúc hoặc đang là lượt của máy trong chế độ PvE
-            const isDisabled = isGameOver || (gameMode === 'pve' && currentPlayer === 2);
+    btnPlus1.addEventListener('click', () => {
+      current += 1;
+      moves += 1;
+      updateUI();
+      checkWin();
+    });
 
-            for (let i = 1; i <= maxK; i++) {
-                const btn = document.createElement('button');
-                btn.className = "bg-slate-700 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl transition text-lg disabled:opacity-50 disabled:cursor-not-allowed";
-                btn.innerText = "+" + i;
-                btn.onclick = () => handleMove(i);
-                btn.disabled = isDisabled || (currentNum + i > targetN);
-                container.appendChild(btn);
-            }
-        }
+    btnPlus5.addEventListener('click', () => {
+      current += 5;
+      moves += 1;
+      updateUI();
+      checkWin();
+    });
 
-        function handleMove(step) {
-            if (isGameOver) return;
+    btnReset.addEventListener('click', () => {
+      // re-enable buttons
+      btnPlus1.disabled = false;
+      btnPlus5.disabled = false;
+      btnPlus1.classList.remove('opacity-50','cursor-not-allowed');
+      btnPlus5.classList.remove('opacity-50','cursor-not-allowed');
+      newGame();
+    });
 
-            currentNum += step;
-            document.getElementById('disp-current').innerText = currentNum;
-            
-            // Xác định tên người vừa đi
-            let actor = "";
-            if (gameMode === 'pve') {
-                actor = (currentPlayer === 1) ? "Bạn" : "Máy";
-            } else {
-                actor = `Người chơi ${currentPlayer}`;
-            }
-            
-            addHistory(`${actor} chọn +${step} ➔ Tổng: ${currentNum}`);
-
-            // Kiểm tra chiến thắng
-            if (currentNum >= targetN) {
-                isGameOver = true;
-                if (gameMode === 'pve') {
-                    if (currentPlayer === 1) {
-                        updateStatus("🎉 CHÚC MỪNG! Bạn đã chạm mốc " + targetN + " và CHIẾN THẮNG!", "emerald");
-                    } else {
-                        updateStatus("💻 Máy đã chạm mốc " + targetN + ". MÁY THẮNG!", "rose");
-                    }
-                } else {
-                    updateStatus(`🎉 CHÚC MỪNG! Người chơi ${currentPlayer} đã chạm mốc ${targetN} và CHIẾN THẮNG!`, "emerald");
-                }
-                renderButtons();
-                return;
-            }
-
-            // Đổi lượt
-            currentPlayer = (currentPlayer === 1) ? 2 : 1;
-            renderButtons();
-
-            if (gameMode === 'pve' && currentPlayer === 2) {
-                updateStatus("Máy đang tính toán chiến thuật...", "amber");
-                setTimeout(botMove, 1000);
-            } else {
-                const turnText = (gameMode === 'pve') ? "Lượt của bạn!" : `Lượt của Người chơi ${currentPlayer}!`;
-                const turnColor = (currentPlayer === 1) ? "indigo" : "cyan";
-                updateStatus(turnText, turnColor);
-            }
-        }
-
-        function botMove() {
-            if (isGameOver) return;
-            let remainder = (targetN - currentNum) % (maxK + 1);
-            let botStep = remainder;
-            if (remainder === 0 || remainder > maxK) {
-                botStep = Math.floor(Math.random() * Math.min(maxK, targetN - currentNum)) + 1;
-            }
-            handleMove(botStep);
-        }
-
-        function updateStatus(text, color) {
-            const statusEl = document.getElementById('disp-status');
-            statusEl.innerText = text;
-            statusEl.className = `py-2 px-4 rounded-xl bg-${color}-500/20 text-${color}-300 font-medium inline-block`;
-        }
-
-        function addHistory(text) {
-            const historyEl = document.getElementById('nim-history');
-            const p = document.createElement('p');
-            p.innerText = text;
-            historyEl.prepend(p);
-        }
-    </script>
+    // start automatically
+    newGame();
+  </script>
 </body>
 </html>
