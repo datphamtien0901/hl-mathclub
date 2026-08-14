@@ -39,7 +39,8 @@
   <!-- Header -->
   <header class="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
     <div class="flex items-center gap-4">
-      <img src="logo.svg" alt="Logo" class="h-10 w-auto object-contain">
+      <!-- use logo.png instead of logo.svg -->
+      <img src="logo.png" alt="Logo" class="h-10 w-auto object-contain">
       <div>
         <h1 class="text-2xl font-extrabold text-indigo-600">HoaLu Math Club - Playzone</h1>
         <p class="text-sm text-slate-500">Cổng trò chơi toán học cho học sinh THCS</p>
@@ -55,28 +56,22 @@
     </nav>
   </header>
 
-  <!-- New Banner -->
+  <!-- New Banner (single sentence with math icons) -->
   <section class="max-w-6xl mx-auto px-6">
-    <div class="rounded-3xl p-8 md:p-12 bg-gradient-to-r from-sky-200 via-indigo-200 to-emerald-100 shadow-lg">
-      <div class="flex flex-col md:flex-row items-center gap-6">
-        <div class="flex-1">
-          <h2 class="text-3xl md:text-4xl font-extrabold text-indigo-700">Hãy thử thách trí tuệ</h2>
-          <p class="mt-3 text-slate-700">Hãy thử thách trí tuệ, chinh phục các chướng ngại vật và khám phá vẻ đẹp của toán học nhé!</p>
-          <div class="mt-6 flex gap-3">
-            <a href="#games" class="inline-block px-6 py-3 rounded-2xl bg-indigo-600 text-white font-semibold shadow-indigo-100 border-b-4 border-indigo-800 hover:bg-indigo-700">
-              <i class="fa-solid fa-gamepad mr-2"></i>Khám phá trò chơi
-            </a>
-            <a href="./top.html" class="inline-block px-4 py-3 rounded-2xl bg-amber-400 text-white font-semibold shadow-md border-b-4 border-amber-600 hover:bg-amber-500">
-              <i class="fa-solid fa-trophy mr-2"></i>Top thử thách
-            </a>
-          </div>
-        </div>
-        <div class="w-48 h-48 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-          <div class="text-center">
-            <div class="text-5xl">🧠</div>
-            <p class="text-sm mt-2 text-slate-500">Toán học là niềm vui</p>
-          </div>
-        </div>
+    <div class="rounded-3xl p-8 md:p-12 bg-gradient-to-r from-sky-200 via-indigo-200 to-emerald-100 shadow-lg relative overflow-hidden">
+      <!-- decorative math icons around -->
+      <div class="hidden md:block absolute -top-6 -left-6 text-6xl opacity-15 text-indigo-200">∑</div>
+      <div class="hidden md:block absolute -bottom-6 -right-6 text-6xl opacity-15 text-emerald-200">π</div>
+      <div class="flex items-center justify-center">
+        <h2 class="text-2xl md:text-3xl font-extrabold text-indigo-700 text-center">Hãy thử thách trí tuệ, chinh phục các chướng ngại vật và khám phá vẻ đẹp của toán học nhé!</h2>
+      </div>
+      <!-- small icons under the sentence -->
+      <div class="mt-6 flex items-center justify-center gap-6 text-indigo-600">
+        <div class="text-2xl bg-white rounded-full w-12 h-12 flex items-center justify-center shadow">+</div>
+        <div class="text-2xl bg-white rounded-full w-12 h-12 flex items-center justify-center shadow">−</div>
+        <div class="text-2xl bg-white rounded-full w-12 h-12 flex items-center justify-center shadow">×</div>
+        <div class="text-2xl bg-white rounded-full w-12 h-12 flex items-center justify-center shadow">÷</div>
+        <div class="text-2xl bg-white rounded-full w-12 h-12 flex items-center justify-center shadow">√</div>
       </div>
     </div>
   </section>
@@ -103,15 +98,18 @@
         </div>
       </article>
 
-      <!-- Card 2 (replaced) -->
+      <!-- Card 2 (Cao thủ tính nhẩm) -->
       <article class="rounded-3xl bg-white p-6 shadow-md hover:shadow-xl transition-shadow">
         <div class="flex items-start justify-between gap-4">
           <div>
             <h4 class="text-lg font-bold text-indigo-600">Cao thủ tính nhẩm</h4>
             <p class="mt-1 text-sm text-slate-600">Tính nhẩm tốc độ</p>
-            <p class="mt-3 text-sm text-slate-500">Hiện phép tính ngẫu nhiên; tích lũy số đáp án đúng trong thời gian. Chế độ Solo và 1v1 (màn hình chia đôi).</p>
+            <p class="mt-3 text-sm text-slate-500">Hiện phép tính trắc nghiệm; tích lũy số đáp án đúng trong thời gian. Chế độ Solo và 1v1 (màn hình chia đôi).</p>
           </div>
-          <div class="text-4xl">⚡</div>
+          <!-- math icon for this game -->
+          <div class="w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-emerald-400 flex items-center justify-center text-white text-2xl shadow-lg">
+            <i class="fa-solid fa-calculator"></i>
+          </div>
         </div>
         <div class="mt-6 flex items-center justify-between">
           <div class="text-sm text-slate-400">Rèn tốc độ tư duy</div>
