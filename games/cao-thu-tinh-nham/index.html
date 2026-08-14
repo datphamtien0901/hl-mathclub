@@ -17,7 +17,10 @@
   <div class="w-full max-w-5xl bg-white rounded-3xl p-6 shadow-lg">
     <header class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-4">
-        <img src="../../logo.svg" alt="Logo" class="h-10">
+        <!-- use a calculator icon instead of logo -->
+        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-emerald-400 flex items-center justify-center text-white text-lg">
+          <i class="fa-solid fa-calculator"></i>
+        </div>
         <div>
           <h1 class="text-xl font-bold text-indigo-700">Cao thủ tính nhẩm</h1>
           <p class="text-sm text-slate-500">Rèn nhanh trí não — Solo hoặc 1v1</p>
@@ -122,31 +125,44 @@
   </div>
 
   <script>
-    // Simple sound fx
-    const AudioCtx = window.AudioContext || window.webkitAudioContext; let audioCtx = null;
-    function ensureAudio(){ if(!audioCtx) audioCtx=new AudioCtx(); }
+    // Improved sound: click + rich victory loop (musical loop)
+    const AudioCtx = window.AudioContext || window.webkitAudioContext; let audioCtx=null; function ensureAudio(){ if(!audioCtx) audioCtx=new AudioCtx(); }
     function clickSound(){ try{ ensureAudio(); const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type='sine'; o.frequency.value=880; o.connect(g); g.connect(audioCtx.destination); g.gain.value=0.0001; const n=audioCtx.currentTime; g.gain.linearRampToValueAtTime(0.08,n+0.001); g.gain.exponentialRampToValueAtTime(0.001,n+0.12); o.start(n); o.stop(n+0.12);}catch(e){} }
-    // Big win music loop (uses oscillator chords) — keep reference to stop
-    let winOscs = [];
-    function startWinMusic(){ try{ ensureAudio(); stopWinMusic(); const now=audioCtx.currentTime; const chord=[523.25,659.25,783.99]; chord.forEach((f,i)=>{ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='triangle'; o.frequency.value=f; o.connect(g); g.connect(audioCtx.destination); g.gain.value=0; g.gain.linearRampToValueAtTime(0.12, now+0.05+i*0.02); g.gain.linearRampToValueAtTime(0.06, now+0.5+i*0.02); o.start(now); winOscs.push({o,g}); }); // vibrato/drone
-      }catch(e){}
-    }
-    function stopWinMusic(){ try{ if(winOscs.length){ winOscs.forEach(({o,g})=>{ try{ g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+0.3); o.stop(audioCtx.currentTime+0.35); }catch(e){} }); } winOscs=[]; }catch(e){}
-    }
 
-    // Leaderboard helper
-    function saveToBoard(item){ try{ const raw = localStorage.getItem('hl_leaderboard'); const arr = raw?JSON.parse(raw):[]; arr.push(item); localStorage.setItem('hl_leaderboard', JSON.stringify(arr)); }catch(e){}
-    }
+    // More musical win loop: arpeggio + pad + bass; loop until stopped
+    let winNodes = {oscillators:[],gains:[],intervalId:null};
+    function startWinMusic(){ try{ ensureAudio(); stopWinMusic(); const now=audioCtx.currentTime;
+        // pad (slow triangle chord)
+        const padFreqs=[261.63,329.63,392.00];
+        padFreqs.forEach((f)=>{
+          const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='triangle'; o.frequency.value=f; g.gain.value=0.0001; o.connect(g); g.connect(audioCtx.destination); g.gain.linearRampToValueAtTime(0.06, now+0.05); o.start(now);
+          winNodes.oscillators.push(o); winNodes.gains.push(g);
+        });
+        // bass drone
+        const bass=audioCtx.createOscillator(); const bg=audioCtx.createGain(); bass.type='sine'; bass.frequency.value=65; bg.gain.value=0.0001; bass.connect(bg); bg.connect(audioCtx.destination); bg.gain.linearRampToValueAtTime(0.05, now+0.05); bass.start(now); winNodes.oscillators.push(bass); winNodes.gains.push(bg);
+        // arpeggio pattern using separate oscillator bursts
+        winNodes.intervalId = setInterval(()=>{
+          const arp=[523.25,659.25,783.99,1046.5]; // notes
+          arp.forEach((f,i)=>{
+            const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(audioCtx.destination); const t=audioCtx.currentTime; g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.12,t+0.01+i*0.02); g.gain.exponentialRampToValueAtTime(0.001,t+0.35+i*0.02); o.start(t); o.stop(t+0.45);
+          });
+        }, 650);
+    }catch(e){} }
+    function stopWinMusic(){ try{ if(winNodes.intervalId){ clearInterval(winNodes.intervalId); winNodes.intervalId=null; } if(winNodes.oscillators){ const t=audioCtx.currentTime; winNodes.gains.forEach(g=>{ try{ g.gain.exponentialRampToValueAtTime(0.0001,t+0.3); }catch(e){} }); winNodes.oscillators.forEach(o=>{ try{ o.stop(t+0.35); }catch(e){} }); }
+        winNodes = {oscillators:[],gains:[],intervalId:null}; }catch(e){} }
 
-    // Arithmetic generator
+    // Confetti helper
+    const confettiCanvas=document.createElement('canvas'); confettiCanvas.style.position='fixed'; confettiCanvas.style.inset=0; confettiCanvas.style.pointerEvents='none'; confettiCanvas.style.zIndex=1100; document.body.appendChild(confettiCanvas); const ctx=confettiCanvas.getContext('2d'); function resize(){ confettiCanvas.width=window.innerWidth; confettiCanvas.height=window.innerHeight;} window.addEventListener('resize',resize); resize(); let parts=[]; function launchConfetti(n=80){ parts=[]; const cols=['#f97316','#f59e0b','#4f46e5','#10b981','#ec4899','#06b6d4']; for(let i=0;i<n;i++){ parts.push({x:Math.random()*confettiCanvas.width,y:Math.random()*-confettiCanvas.height/2,w:6+Math.random()*12,h:8+Math.random()*14,angle:Math.random()*360,sx:-2+Math.random()*4,sy:2+Math.random()*6,rot:-0.1+Math.random()*0.2,color:cols[Math.floor(Math.random()*cols.length)],g:0.02+Math.random()*0.08}); } run(); }
+    let anim=false; function run(){ if(anim) return; anim=true; let last=performance.now(); function f(now){ const dt=(now-last)/16.666; last=now; ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); for(let i=parts.length-1;i>=0;i--){ const p=parts[i]; p.x+=p.sx*dt; p.y+=p.sy*dt; p.sy+=p.g*dt; p.angle+=p.rot*dt; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle); ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); if(p.y>confettiCanvas.height+50) parts.splice(i,1); } if(parts.length>0) requestAnimationFrame(f); else anim=false; } requestAnimationFrame(f); }
+    function stopConfetti(){ parts=[]; ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); }
+
+    // Arithmetic generator & game logic (kept as before)
     function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
-    function genOne(){ const ops=['+','-','*','/']; const op=ops[randInt(0,ops.length-1)]; if(op==='+'||op==='-'){ const a=randInt(10,99); const b=randInt(1,9); return {expr:`${a} ${op} ${b}`, answer: eval(`${a}${op}${b}`)} } else { const a=randInt(1,9); const b=randInt(1,9); if(op==='*') return {expr:`${a} × ${b}`, answer: a*b}; // division ensure integer division
-      const prod=a*b; return {expr:`${prod} ÷ ${a}`, answer: b}; }
+    function genOne(){ const ops=['+','-','*','/']; const op=ops[randInt(0,ops.length-1)]; if(op==='+'||op==='-'){ const a=randInt(10,99); const b=randInt(1,9); return {expr:`${a} ${op} ${b}`, answer: eval(`${a}${op}${b}`)} } else { const a=randInt(1,9); const b=randInt(1,9); if(op==='*') return {expr:`${a} × ${b}`, answer: a*b}; const prod=a*b; return {expr:`${prod} ÷ ${a}`, answer: b}; }
     }
 
     // Game vars
     let mode='solo', duration=30, timer=null, timeLeft=0; let score=0; let question=null;
-    // pvp
     let s1=0,s2=0, q1=null,q2=null; let countdownId=null;
 
     const startBtn=document.getElementById('start');
@@ -168,7 +184,7 @@
     const endBtn=document.getElementById('end'); const resultMsg=document.getElementById('resultMsg');
     const postForm=document.getElementById('postForm'); const regName=document.getElementById('regName'); const regClass=document.getElementById('regClass'); const regBtn=document.getElementById('regBtn');
 
-    function showSettings(){ settings.classList.remove('hidden'); game.classList.add('hidden'); postForm.classList.add('hidden'); }
+    function showSettings(){ settings.classList.remove('hidden'); game.classList.add('hidden'); postForm.classList.add('hidden'); stopWinMusic(); stopConfetti(); }
     function showGame(){ settings.classList.add('hidden'); game.classList.remove('hidden'); }
 
     startBtn.addEventListener('click', ()=>{
@@ -184,29 +200,20 @@
     function updateTimeBar(){ const pct=Math.max(0,(timeLeft/duration)*100); timeBar.style.width=pct+'%'; }
     submitEl.addEventListener('click', ()=>{ clickSound(); const val=Number(answerEl.value); if(!isNaN(val) && val===question.answer){ score++; scoreEl.textContent=score; question=genOne(); questionEl.textContent=question.expr; answerEl.value=''; } else { answerEl.value=''; question=genOne(); questionEl.textContent=question.expr; } });
     skipEl.addEventListener('click', ()=>{ clickSound(); question=genOne(); questionEl.textContent=question.expr; answerEl.value=''; });
-    function endSolo(){ clearInterval(timer); resultMsg.textContent=`Kết thúc — Đúng: ${score}`; // show post form to register
-      postForm.classList.remove('hidden'); postForm.scrollIntoView({behavior:'smooth'});
-      // prepare regBtn to save
+    function endSolo(){ clearInterval(timer); resultMsg.textContent=`Kết thúc — Đúng: ${score}`; postForm.classList.remove('hidden'); postForm.scrollIntoView({behavior:'smooth'});
       regBtn.onclick = ()=>{ const name=regName.value.trim(); const cls=regClass.value.trim(); if(!name){ alert('Nhập họ tên'); return;} saveToBoard({name, class:cls, game:'Cao thủ tính nhẩm (Solo)', score, note:`Đúng ${score}`, ts:new Date().toISOString()}); alert('Đã ghi danh!'); regName.value=''; regClass.value=''; }
-      // celebration
-      startWinMusic(); launchConfetti(120);
+      startWinMusic(); launchConfetti(140);
     }
 
-    // PVP game: simultaneous streams
+    // PVP game
     function startPvp(){ q1=genOne(); q2=genOne(); q1El.textContent=q1.expr; q2El.textContent=q2.expr; a1El.value=''; a2El.value=''; s1=0; s2=0; s1El.textContent=s1; s2El.textContent=s2; timeLeft=duration; updateTimeBar(); countdownId=setInterval(()=>{ timeLeft--; updateTimeBar(); if(timeLeft<=0) endPvp(); },1000); }
     ok1.addEventListener('click', ()=>{ clickSound(); const v=Number(a1El.value); if(!isNaN(v) && v===q1.answer){ s1++; s1El.textContent=s1; q1=genOne(); q1El.textContent=q1.expr; a1El.value=''; } else { a1El.value=''; q1=genOne(); q1El.textContent=q1.expr; } });
     ok2.addEventListener('click', ()=>{ clickSound(); const v=Number(a2El.value); if(!isNaN(v) && v===q2.answer){ s2++; s2El.textContent=s2; q2=genOne(); q2El.textContent=q2.expr; a2El.value=''; } else { a2El.value=''; q2=genOne(); q2El.textContent=q2.expr; } });
-    function endPvp(){ clearInterval(countdownId); resultMsg.textContent=`Kết thúc — Người 1: ${s1} | Người 2: ${s2}`; postForm.classList.remove('hidden'); postForm.scrollIntoView({behavior:'smooth'}); // determine winner
-      let winner=null; if(s1>s2) winner={name:'Người chơi 1', score:s1}; else if(s2>s1) winner={name:'Người chơi 2', score:s2}; else winner={name:'Hòa', score:s1}; if(winner.name!=='Hòa'){ startWinMusic(); launchConfetti(140); }
+    function endPvp(){ clearInterval(countdownId); resultMsg.textContent=`Kết thúc — Người 1: ${s1} | Người 2: ${s2}`; postForm.classList.remove('hidden'); postForm.scrollIntoView({behavior:'smooth'}); let winner=null; if(s1>s2) winner={name:'Người chơi 1', score:s1}; else if(s2>s1) winner={name:'Người chơi 2', score:s2}; else winner={name:'Hòa', score:s1}; if(winner.name!=='Hòa'){ startWinMusic(); launchConfetti(140); }
       regBtn.onclick = ()=>{ const name=regName.value.trim(); const cls=regClass.value.trim(); if(!name){ alert('Nhập họ tên'); return;} saveToBoard({name, class:cls, game:'Cao thủ tính nhẩm (1v1)', score: winner.score, note:`${winner.name} — ${winner.score} đáp án`, ts:new Date().toISOString()}); alert('Đã ghi danh!'); regName.value=''; regClass.value=''; }
     }
 
     endBtn.addEventListener('click', ()=>{ stopWinMusic(); stopConfetti(); showSettings(); });
-
-    // confetti simple (reuse from other page but simpler)
-    const confettiCanvas=document.createElement('canvas'); confettiCanvas.style.position='fixed'; confettiCanvas.style.inset=0; confettiCanvas.style.pointerEvents='none'; confettiCanvas.style.zIndex=1100; document.body.appendChild(confettiCanvas); const ctx=confettiCanvas.getContext('2d'); function resize(){ confettiCanvas.width=window.innerWidth; confettiCanvas.height=window.innerHeight;} window.addEventListener('resize',resize); resize(); let parts=[]; function launchConfetti(n=80){ parts=[]; const cols=['#f97316','#f59e0b','#4f46e5','#10b981','#ec4899','#06b6d4']; for(let i=0;i<n;i++){ parts.push({x:Math.random()*confettiCanvas.width,y:Math.random()*-confettiCanvas.height/2,w:6+Math.random()*12,h:8+Math.random()*14,angle:Math.random()*360,sx:-2+Math.random()*4,sy:2+Math.random()*6,rot:-0.1+Math.random()*0.2,color:cols[Math.floor(Math.random()*cols.length)],g:0.02+Math.random()*0.08}); } run(); }
-    let anim=false; function run(){ if(anim) return; anim=true; let last=performance.now(); function f(now){ const dt=(now-last)/16.666; last=now; ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); for(let i=parts.length-1;i>=0;i--){ const p=parts[i]; p.x+=p.sx*dt; p.y+=p.sy*dt; p.sy+=p.g*dt; p.angle+=p.rot*dt; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle); ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); if(p.y>confettiCanvas.height+50) parts.splice(i,1); } if(parts.length>0) requestAnimationFrame(f); else anim=false; } requestAnimationFrame(f); }
-    function stopConfetti(){ parts=[]; ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); }
 
     // Save helper
     function saveToBoard(item){ try{ const raw=localStorage.getItem('hl_leaderboard'); const arr=raw?JSON.parse(raw):[]; arr.push(item); localStorage.setItem('hl_leaderboard',JSON.stringify(arr)); }catch(e){} }
