@@ -22,19 +22,20 @@
 
   <style>
     body { font-family: 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto; background: linear-gradient(180deg,#f0f9ff, #f9fafb); }
+    .fade-slide { transition: all 300ms ease; }
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
   <div class="w-full max-w-3xl bg-white rounded-3xl p-6 shadow-lg">
     <header class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-4">
-        <!-- Replaced logo image with game icon -->
+        <!-- Game icon -->
         <div class="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 via-amber-400 to-emerald-400 flex items-center justify-center shadow-md text-white text-2xl">
           <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
         </div>
         <div>
           <h1 class="text-xl font-bold text-indigo-600">Chinh Phục Đích N</h1>
-          <p class="text-sm text-slate-500">Trò đếm số: ai chạm đúng N sẽ thắng • Có chế độ 1v1 hoặc chơi với máy</p>
+          <p class="text-sm text-slate-500">Trò đếm số: ai chạm đúng N sẽ thắng</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
@@ -45,36 +46,67 @@
     </header>
 
     <main>
-      <!-- Controls -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-600">Mục tiêu N</label>
-          <input id="inputN" type="number" min="5" value="21" class="mt-1 block w-full rounded-xl border-slate-200 shadow-sm p-2" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-600">Bước tối đa k</label>
-          <input id="inputK" type="number" min="1" value="3" class="mt-1 block w-full rounded-xl border-slate-200 shadow-sm p-2" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-600">Chế độ chơi</label>
-          <div class="mt-1 flex gap-2">
-            <button id="modePvp" class="mode-btn flex-1 px-3 py-2 rounded-2xl bg-indigo-600 text-white font-semibold">1v1</button>
-            <button id="modeCpu" class="mode-btn flex-1 px-3 py-2 rounded-2xl bg-slate-100 text-slate-700 font-semibold">Vs Máy</button>
+      <!-- Initial settings panel (shown first) -->
+      <section id="settingsPanel" class="fade-slide">
+        <h2 class="text-lg font-semibold text-indigo-700 mb-2">Cài đặt trò chơi</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-600">Mục tiêu N</label>
+            <input id="inputN" type="number" min="5" value="21" class="mt-1 block w-full rounded-xl border-slate-200 shadow-sm p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-600">Bước tối đa k</label>
+            <input id="inputK" type="number" min="1" value="3" class="mt-1 block w-full rounded-xl border-slate-200 shadow-sm p-2" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-600">Chế độ</label>
+            <select id="selectMode" class="mt-1 block w-full rounded-xl border-slate-200 shadow-sm p-2">
+              <option value="pvp">1v1 (Hai người)</option>
+              <option value="cpu">Vs Máy</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-600">Máy đi trước</label>
+            <div class="mt-1">
+              <label class="inline-flex items-center gap-2 bg-slate-100 p-2 rounded-xl w-full">
+                <input id="cpuFirst" type="checkbox" />
+                <span class="text-sm text-slate-700">Bật nếu muốn Máy đi trước</span>
+              </label>
+            </div>
           </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-600">Máy đi trước</label>
-          <div class="mt-1">
-            <label class="inline-flex items-center gap-2 bg-slate-100 p-2 rounded-xl">
-              <input id="cpuFirst" type="checkbox" />
-              <span class="text-sm text-slate-700">Bật nếu muốn Máy đi trước</span>
-            </label>
-          </div>
-        </div>
-      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 items-center">
-        <div class="rounded-xl p-4 bg-sky-50">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center mb-6">
+          <div class="rounded-xl p-4 bg-white border border-slate-100">
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <div class="text-sm text-slate-500">Độ khó Máy</div>
+                <div class="text-xs text-slate-400">Dễ: ngẫu nhiên • Trung bình: đôi khi tối ưu • Khó: tối ưu</div>
+              </div>
+              <div class="flex gap-2">
+                <button id="diffEasy" class="px-3 py-2 rounded-2xl bg-slate-100">Dễ</button>
+                <button id="diffMed" class="px-3 py-2 rounded-2xl bg-indigo-600 text-white">Trung bình</button>
+                <button id="diffHard" class="px-3 py-2 rounded-2xl bg-slate-100">Khó</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-xl p-4 bg-sky-50">
+            <div class="text-sm text-slate-500">Thông tin nhanh</div>
+            <p class="mt-2 text-sm text-slate-600">Luật: Bắt đầu từ 0. Mỗi lượt thêm 1..k. Ai đạt chính xác N sẽ thắng. Bấm "Bắt đầu" để vào trò chơi.</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="btnStartSettings" class="px-4 py-2 rounded-2xl bg-emerald-500 text-white font-semibold border-b-4 border-emerald-700 shadow-md">Bắt đầu</button>
+          <button id="btnCancel" class="px-4 py-2 rounded-2xl bg-slate-200 text-slate-700 font-semibold border-b-4 border-slate-400">Hủy</button>
+          <div id="messageSettings" class="ml-auto text-slate-600 font-medium"></div>
+        </div>
+      </section>
+
+      <!-- Game area (hidden until Start) -->
+      <section id="gameArea" class="mt-6 hidden">
+        <div class="rounded-xl p-4 bg-sky-50 mb-4">
           <div class="flex items-center justify-between">
             <div>
               <div class="text-sm text-slate-500">Mục tiêu</div>
@@ -90,45 +122,25 @@
             </div>
           </div>
 
-          <!-- Progress bar -->
+          <!-- Progress bar (no percent text) -->
           <div class="mt-4">
             <div class="w-full h-6 bg-white rounded-full shadow-inner border border-slate-100 overflow-hidden">
-              <div id="progress" class="h-6 bg-gradient-to-r from-indigo-500 via-amber-400 to-emerald-400 text-xs text-white flex items-center justify-center" style="width:0%">0%</div>
+              <div id="progress" class="h-6 bg-gradient-to-r from-indigo-500 via-amber-400 to-emerald-400" style="width:0%"></div>
             </div>
           </div>
         </div>
 
-        <div class="rounded-xl p-4 bg-white border border-slate-100">
-          <div class="flex items-center justify-between mb-2">
-            <div>
-              <div class="text-sm text-slate-500">Độ khó Máy</div>
-              <div class="text-xs text-slate-400">Chọn cách Máy đưa ra quyết định</div>
-            </div>
-            <div class="flex gap-2">
-              <button id="diffEasy" class="px-3 py-2 rounded-2xl bg-slate-100">Dễ</button>
-              <button id="diffMed" class="px-3 py-2 rounded-2xl bg-indigo-600 text-white">Trung bình</button>
-              <button id="diffHard" class="px-3 py-2 rounded-2xl bg-slate-100">Khó</button>
-            </div>
-          </div>
-          <p class="text-sm text-slate-500">Dễ: chọn ngẫu nhiên hợp lệ. Trung bình: đôi khi chơi tối ưu. Khó: chơi tối ưu luôn.</p>
+        <div class="mb-4">
+          <div id="turnIndicator" class="text-sm mb-2 font-semibold text-indigo-700">Chuẩn bị...</div>
+          <div id="buttons" class="flex flex-wrap gap-3"></div>
         </div>
-      </div>
 
-      <!-- Game board: buttons for steps -->
-      <div class="mb-4">
-        <div id="turnIndicator" class="text-sm mb-2 font-semibold text-indigo-700">Chuẩn bị...</div>
-        <div id="buttons" class="flex flex-wrap gap-3"></div>
-      </div>
+        <div class="flex items-center gap-3">
+          <button id="btnReset" class="px-4 py-2 rounded-2xl bg-slate-200 text-slate-700 font-semibold border-b-4 border-slate-400">Kết thúc &amp; Quay lại</button>
+          <div id="message" class="ml-auto text-slate-600 font-medium"></div>
+        </div>
+      </section>
 
-      <div class="flex items-center gap-3">
-        <button id="btnStart" class="px-4 py-2 rounded-2xl bg-emerald-500 text-white font-semibold border-b-4 border-emerald-700 shadow-md">Bắt đầu</button>
-        <button id="btnReset" class="px-4 py-2 rounded-2xl bg-slate-200 text-slate-700 font-semibold border-b-4 border-slate-400">Khởi tạo lại</button>
-        <div id="message" class="ml-auto text-slate-600 font-medium"></div>
-      </div>
-
-      <div class="mt-4 text-sm text-slate-500">
-        <p><strong>Luật chơi:</strong> Bắt đầu từ 0, mỗi lượt người chơi được thêm 1 tới k. Ai chọn đúng số N sẽ thắng.</p>
-      </div>
     </main>
   </div>
 
@@ -136,18 +148,23 @@
     // Elements
     const inputN = document.getElementById('inputN');
     const inputK = document.getElementById('inputK');
-    const modePvp = document.getElementById('modePvp');
-    const modeCpu = document.getElementById('modeCpu');
+    const selectMode = document.getElementById('selectMode');
     const cpuFirstCheckbox = document.getElementById('cpuFirst');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const gameArea = document.getElementById('gameArea');
+    const btnStartSettings = document.getElementById('btnStartSettings');
+    const btnCancel = document.getElementById('btnCancel');
+    const messageSettings = document.getElementById('messageSettings');
+
     const targetEl = document.getElementById('target');
     const currentEl = document.getElementById('current');
     const movesEl = document.getElementById('moves');
     const progressEl = document.getElementById('progress');
     const buttonsEl = document.getElementById('buttons');
     const turnIndicator = document.getElementById('turnIndicator');
-    const btnStart = document.getElementById('btnStart');
     const btnReset = document.getElementById('btnReset');
     const messageEl = document.getElementById('message');
+
     const diffEasy = document.getElementById('diffEasy');
     const diffMed = document.getElementById('diffMed');
     const diffHard = document.getElementById('diffHard');
@@ -161,22 +178,6 @@
     let playerTurn = 1; // 1 or 2 (2 = CPU when mode='cpu')
     let running = false;
     let cpuDifficulty = 'medium'; // easy, medium, hard
-
-    function setMode(newMode) {
-      mode = newMode;
-      if (mode === 'pvp') {
-        modePvp.classList.add('bg-indigo-600', 'text-white');
-        modePvp.classList.remove('bg-slate-100', 'text-slate-700');
-        modeCpu.classList.remove('bg-indigo-600','text-white');
-        modeCpu.classList.add('bg-slate-100','text-slate-700');
-      } else {
-        modeCpu.classList.add('bg-indigo-600','text-white');
-        modeCpu.classList.remove('bg-slate-100','text-slate-700');
-        modePvp.classList.remove('bg-indigo-600','text-white');
-        modePvp.classList.add('bg-slate-100','text-slate-700');
-      }
-      updateUI();
-    }
 
     function setDifficulty(d) {
       cpuDifficulty = d;
@@ -209,7 +210,6 @@
       movesEl.textContent = moves;
       const percent = Math.min(100, Math.round((current / N) * 100));
       progressEl.style.width = percent + '%';
-      progressEl.textContent = percent + '%';
 
       if (!running) {
         turnIndicator.textContent = 'Nhấn Bắt đầu để chơi';
@@ -271,7 +271,6 @@
     }
 
     function cpuChooseMove() {
-      // Determine optimal move r in [1..k] that makes (N - (current + r)) % (k+1) === 0
       const maxStep = Math.min(k, N - current);
       if (maxStep <= 0) return 0;
       const optimalR = ((N - current) % (k + 1));
@@ -281,24 +280,20 @@
       }
 
       if (cpuDifficulty === 'easy') {
-        // random valid
         return Math.floor(Math.random() * maxStep) + 1;
       }
 
       if (cpuDifficulty === 'medium') {
-        // 60% chance to play optimal (if exists), else random
         if (rOpt > 0 && Math.random() < 0.6) return rOpt;
         return Math.floor(Math.random() * maxStep) + 1;
       }
 
-      // hard: always optimal when possible, else random
       if (rOpt > 0) return rOpt;
       return Math.floor(Math.random() * maxStep) + 1;
     }
 
     function cpuMove() {
       const r = cpuChooseMove();
-      // safety
       if (r <= 0) {
         messageEl.textContent = 'Máy không thể đi';
         setControlsEnabled(true);
@@ -311,29 +306,34 @@
       checkEndOrContinue();
     }
 
-    // Start/reset handlers
-    btnStart.addEventListener('click', () => {
-      // parse inputs
+    // Settings start handler
+    btnStartSettings.addEventListener('click', () => {
       const nVal = Number(inputN.value) || 21;
       const kVal = Number(inputK.value) || 3;
       if (nVal <= 0 || kVal <= 0) {
-        alert('Vui lòng đặt N > 0 và k > 0');
+        messageSettings.textContent = 'Vui lòng đặt N > 0 và k > 0';
         return;
       }
       N = Math.max(5, Math.floor(nVal));
       k = Math.max(1, Math.floor(kVal));
+      mode = selectMode.value;
       current = 0;
       moves = 0;
+      playerTurn = 1;
       running = true;
-      playerTurn = 1; // player 1 starts by default
+      // set difficulty already via buttons
       renderButtons();
       updateUI();
       setControlsEnabled(true);
-      messageEl.textContent = 'Trò chơi bắt đầu!';
+      messageSettings.textContent = '';
 
-      // If mode cpu and cpuFirst checked, let CPU play first
+      // hide settings, show game area
+      settingsPanel.classList.add('hidden');
+      gameArea.classList.remove('hidden');
+
+      // If mode cpu and cpuFirst checked, make CPU move first
       if (mode === 'cpu' && cpuFirstCheckbox.checked) {
-        playerTurn = 2; // CPU is player 2
+        playerTurn = 2;
         updateUI();
         setControlsEnabled(false);
         turnIndicator.textContent = 'Máy đang suy nghĩ... 🤖';
@@ -341,30 +341,39 @@
       }
     });
 
-    btnReset.addEventListener('click', () => {
-      running = false;
-      current = 0;
-      moves = 0;
-      N = Number(inputN.value) || 21;
-      k = Number(inputK.value) || 3;
-      playerTurn = 1;
-      renderButtons();
-      updateUI();
-      setControlsEnabled(false);
-      messageEl.textContent = 'Đã khởi tạo lại';
+    btnCancel.addEventListener('click', () => {
+      // go back to index
+      window.location.href = '../../index.html';
     });
 
-    // Mode buttons
-    modePvp.addEventListener('click', () => setMode('pvp'));
-    modeCpu.addEventListener('click', () => setMode('cpu'));
+    btnReset.addEventListener('click', () => {
+      // end game and return to settings
+      running = false;
+      settingsPanel.classList.remove('hidden');
+      gameArea.classList.add('hidden');
+      messageEl.textContent = '';
+      messageSettings.textContent = 'Bạn đã kết thúc ván chơi.';
+    });
 
     // Difficulty buttons
     diffEasy.addEventListener('click', () => setDifficulty('easy'));
     diffMed.addEventListener('click', () => setDifficulty('medium'));
     diffHard.addEventListener('click', () => setDifficulty('hard'));
 
+    function setDifficulty(d) {
+      cpuDifficulty = d;
+      diffEasy.classList.remove('bg-indigo-600','text-white');
+      diffMed.classList.remove('bg-indigo-600','text-white');
+      diffHard.classList.remove('bg-indigo-600','text-white');
+      diffEasy.classList.add('bg-slate-100');
+      diffMed.classList.add('bg-slate-100');
+      diffHard.classList.add('bg-slate-100');
+      if (d === 'easy') { diffEasy.classList.add('bg-indigo-600','text-white'); }
+      if (d === 'medium') { diffMed.classList.add('bg-indigo-600','text-white'); }
+      if (d === 'hard') { diffHard.classList.add('bg-indigo-600','text-white'); }
+    }
+
     // Init
-    setMode('pvp');
     setDifficulty('medium');
     renderButtons();
     updateUI();
