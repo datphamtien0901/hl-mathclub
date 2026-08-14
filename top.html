@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Top Thử Thách — HoaLu Math Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{font-family:Nunito,system-ui,-apple-system,Segoe UI,Roboto;background:#f8fafc}</style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+  <div class="w-full max-w-3xl bg-white rounded-3xl p-6 shadow-lg">
+    <header class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-4">
+        <img src="./logo.svg" alt="Logo" class="h-10">
+        <div>
+          <h1 class="text-lg font-bold text-indigo-700">Top Thử Thách</h1>
+          <p class="text-sm text-slate-500">Danh sách vinh danh người chơi xuất sắc</p>
+        </div>
+      </div>
+      <a href="./index.html" class="px-3 py-2 rounded-lg bg-amber-400 text-white font-semibold border-b-4 border-amber-600 shadow-md">Trở về</a>
+    </header>
+
+    <main>
+      <div id="leaderboard" class="space-y-3">
+        <!-- entries inserted here -->
+      </div>
+      <div class="mt-6 text-sm text-slate-500">Lưu ý: danh sách lưu trên trình duyệt cục bộ (localStorage). Để chia sẻ, hãy chụp màn hình hoặc thêm tính năng server-side sau này.</div>
+    </main>
+  </div>
+
+  <script>
+    function loadLeaderboard(){
+      try{
+        const raw = localStorage.getItem('hl_leaderboard');
+        if(!raw) return [];
+        return JSON.parse(raw);
+      }catch(e){return []}
+    }
+    function render(){
+      const root = document.getElementById('leaderboard');
+      const items = loadLeaderboard();
+      if(items.length===0){root.innerHTML='<div class="p-6 bg-slate-50 rounded-lg text-center text-slate-500">Chưa có ghi danh nào.</div>';return}
+      // group by game and sort by score (if available) or timestamp
+      const sorted = items.sort((a,b)=>{
+        if(a.score!=null && b.score!=null) return b.score - a.score; // higher score first
+        return new Date(b.ts)-new Date(a.ts);
+      });
+      root.innerHTML='';
+      sorted.forEach((it,idx)=>{
+        const el = document.createElement('div');
+        el.className='p-4 rounded-lg border border-slate-100 flex items-center justify-between';
+        el.innerHTML = `
+          <div>
+            <div class="font-semibold text-indigo-600">${idx+1}. ${it.name} — Lớp ${it.class || '-'} <span class="text-sm text-slate-400">(${it.game})</span></div>
+            <div class="text-sm text-slate-500">${it.note || ''}</div>
+          </div>
+          <div class="text-sm text-slate-400">${new Date(it.ts).toLocaleString()}</div>
+        `;
+        root.appendChild(el);
+      })
+    }
+    render();
+  </script>
+</body>
+</html>
